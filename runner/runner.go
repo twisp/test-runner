@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -94,8 +95,8 @@ func (r *Runner) RunSuite(ctx context.Context, suitePath string) (*SuiteResult, 
 				fmt.Printf("      Error: %v\n", testResult.Error)
 			}
 			if r.options.Verbose && testResult.Expected != "" && testResult.Actual != "" {
-				fmt.Printf("      Expected: %s\n", truncate(testResult.Expected, 200))
-				fmt.Printf("      Actual:   %s\n", truncate(testResult.Actual, 200))
+				fmt.Printf("      Expected: %s\n", compact(testResult.Expected))
+				fmt.Printf("      Actual:   %s\n", compact(testResult.Actual))
 			}
 
 			if r.options.FailFast {
@@ -229,4 +230,12 @@ func truncate(s string, maxLen int) string {
 		return s
 	}
 	return s[:maxLen] + "..."
+}
+
+func compact(s string) string {
+	var buf bytes.Buffer
+	if err := json.Compact(&buf, []byte(s)); err != nil {
+		return strings.ReplaceAll(s, "\n", " ")
+	}
+	return buf.String()
 }
