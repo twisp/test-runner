@@ -5,30 +5,30 @@ A standalone CLI tool for running GraphQL test fixtures against the Twisp local 
 ## Installation
 
 ```bash
-go install github.com/twisp/runner@latest
+go install github.com/twisp/test-runner@latest
 ```
 
 Or build from source:
 
 ```bash
-git clone https://github.com/twisp/runner.git
-cd runner
-go build -o twisp-runner
+git clone https://github.com/twisp/test-runner.git
+cd test-runner
+go build -o test-runner
 ```
 
 ## Usage
 
 ```bash
 # Run a single test suite
-./twisp-runner --test_suite_path /path/to/fixtures/errors
+./test-runner --test_suite_path /path/to/fixtures/errors
 
 # Run multiple test suites (each gets its own container)
-./twisp-runner \
+./test-runner \
   --test_suite_path /path/to/fixtures/errors \
   --test_suite_path /path/to/fixtures/transferWorkflow
 
 # With options
-./twisp-runner --test_suite_path /path/to/fixtures --verbose --fail-fast
+./test-runner --test_suite_path /path/to/fixtures --verbose --fail-fast
 ```
 
 ### Options

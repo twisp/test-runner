@@ -10,19 +10,19 @@ Twisp GraphQL Test Runner - a CLI tool for running GraphQL test fixtures against
 
 ```bash
 # Build the binary
-go build -o twisp-runner
+go build -o test-runner
 
 # Run tests against a fixture directory
-./twisp-runner --test_suite_path /path/to/fixtures
+./test-runner --test_suite_path /path/to/fixtures
 
 # Run with verbose output (shows response diffs)
-./twisp-runner --test_suite_path /path/to/fixtures --verbose
+./test-runner --test_suite_path /path/to/fixtures --verbose
 
 # Run multiple suites (each gets its own container)
-./twisp-runner --test_suite_path /path/to/fixtures/errors --test_suite_path /path/to/fixtures/workflow
+./test-runner --test_suite_path /path/to/fixtures/errors --test_suite_path /path/to/fixtures/workflow
 
 # Stop on first failure
-./twisp-runner --test_suite_path /path/to/fixtures --fail-fast
+./test-runner --test_suite_path /path/to/fixtures --fail-fast
 ```
 
 ## Architecture

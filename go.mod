@@ -1,4 +1,4 @@
-module github.com/twisp/runner
+module github.com/twisp/test-runner
 
 go 1.25.3
 

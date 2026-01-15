@@ -10,7 +10,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/twisp/runner/runner"
+	"github.com/twisp/test-runner/runner"
 )
 
 // stringSlice implements flag.Value for repeatable string flags.
