@@ -19,11 +19,20 @@ go build -o test-runner
 ## Usage
 
 ```bash
-# Run the example book-transfer suite
+# Run the example book-transfer suite (uses testcontainers)
 ./test-runner --test_suite_path ./example-suites/book-transfer
 
-# Run a single test suite
-./test-runner --test_suite_path /path/to/fixtures/errors
+# Run against an external endpoint (skips container creation)
+./test-runner \
+  --endpoint http://localhost:8080/financial/v1/graphql \
+  --test_suite_path /path/to/fixtures
+
+# Run with custom headers (useful for auth tokens)
+./test-runner \
+  --endpoint https://api.us-east-1.cloud.twisp.com/financial/v1/graphql \
+  --header "Authorization: Bearer token" \
+  --header "X-Request-Id: test-123" \
+  --test_suite_path /path/to/fixtures
 
 # Run multiple test suites (each gets its own container)
 ./test-runner \
@@ -39,6 +48,8 @@ go build -o test-runner
 | Flag | Description |
 |------|-------------|
 | `--test_suite_path` | Path to a test suite directory (required, can be repeated) |
+| `--endpoint` | External GraphQL endpoint URL (skips container creation) |
+| `--header` | Custom header in `Key: Value` format (can be repeated, overrides defaults) |
 | `--verbose` | Print detailed output including response diffs |
 | `--fail-fast` | Stop execution on first test failure |
 
@@ -79,21 +90,23 @@ walk(if type == "object" then with_entries(select(.key | test("created|modified"
 ## How It Works
 
 1. For each `--test_suite_path`, the runner:
-   - Starts a fresh `public.ecr.aws/twisp/local:latest` container
+   - Starts a fresh `public.ecr.aws/twisp/local:latest` container (or uses `--endpoint` if provided)
    - Discovers all test fixtures in the directory tree
    - Executes tests in order (setup first, then children by sequence)
    - Compares actual responses against expected responses
-   - Terminates the container
+   - Terminates the container (if one was started)
 
-2. Each test suite gets its own isolated container for clean state
+2. Each test suite gets its own isolated container for clean state (when not using `--endpoint`)
 
 3. Test results are reported with pass/fail status and timing
+
+4. Custom headers via `--header` are applied to all requests, overriding defaults like `X-Twisp-Account-Id`
 
 ## Requirements
 
 - Go 1.21+
-- Docker (for testcontainers)
-- Access to `public.ecr.aws/twisp/local:latest` image
+- Docker (for testcontainers, not required when using `--endpoint`)
+- Access to `public.ecr.aws/twisp/local:latest` image (not required when using `--endpoint`)
 
 ## Example Output
 

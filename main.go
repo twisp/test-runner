@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/twisp/test-runner/runner"
@@ -31,14 +32,31 @@ func hashSuitePath(path string) string {
 	return hex.EncodeToString(h[:])
 }
 
+// parseHeaders parses header flags in "Key: Value" format into a map.
+func parseHeaders(headerFlags []string) (map[string]string, error) {
+	headers := make(map[string]string)
+	for _, h := range headerFlags {
+		parts := strings.SplitN(h, ":", 2)
+		if len(parts) != 2 {
+			return nil, fmt.Errorf("invalid header format: %q (expected 'Key: Value')", h)
+		}
+		headers[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
+	}
+	return headers, nil
+}
+
 func main() {
 	var suitePaths stringSlice
+	var headerFlags stringSlice
 	var verbose bool
 	var failFast bool
+	var endpoint string
 
 	flag.Var(&suitePaths, "test_suite_path", "Path to a test suite directory (can be specified multiple times)")
 	flag.BoolVar(&verbose, "verbose", false, "Print detailed output including response diffs")
 	flag.BoolVar(&failFast, "fail-fast", false, "Stop execution on first test failure")
+	flag.StringVar(&endpoint, "endpoint", "", "External GraphQL endpoint URL (skips container creation)")
+	flag.Var(&headerFlags, "header", "Custom header in 'Key: Value' format (can be specified multiple times)")
 	flag.Parse()
 
 	if len(suitePaths) == 0 {
@@ -46,6 +64,15 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
+
+	// Parse custom headers
+	headers, err := parseHeaders(headerFlags)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	useExternalEndpoint := endpoint != ""
 
 	// Set up context with cancellation
 	ctx, cancel := context.WithCancel(context.Background())
@@ -69,27 +96,41 @@ func main() {
 	totalFailed := 0
 	totalSkipped := 0
 
-	// Run each test suite with its own container
+	// Run each test suite
 	for _, suitePath := range suitePaths {
-		fmt.Printf("\n========================================\n")
-		fmt.Printf("Starting container for suite: %s\n", suitePath)
-		fmt.Printf("========================================\n")
+		var graphQLEndpoint string
+		var container *runner.TwispContainer
 
-		container, err := runner.StartTwispContainer(ctx)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error starting container: %v\n", err)
-			os.Exit(1)
+		if useExternalEndpoint {
+			graphQLEndpoint = endpoint
+			fmt.Printf("\n========================================\n")
+			fmt.Printf("Running suite against external endpoint: %s\n", suitePath)
+			fmt.Printf("========================================\n")
+			fmt.Printf("Endpoint: %s\n", graphQLEndpoint)
+		} else {
+			fmt.Printf("\n========================================\n")
+			fmt.Printf("Starting container for suite: %s\n", suitePath)
+			fmt.Printf("========================================\n")
+
+			var err error
+			container, err = runner.StartTwispContainer(ctx)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error starting container: %v\n", err)
+				os.Exit(1)
+			}
+			graphQLEndpoint = container.GraphQLURL
+			fmt.Printf("Container ready at: %s\n", graphQLEndpoint)
 		}
 
-		fmt.Printf("Container ready at: %s\n", container.GraphQLURL)
-
 		accountID := hashSuitePath(suitePath)
-		r := runner.NewRunner(container, options, accountID)
+		r := runner.NewRunner(graphQLEndpoint, options, accountID, headers)
 		result, err := r.RunSuite(ctx, suitePath)
 
-		// Always try to terminate the container
-		if termErr := container.Terminate(ctx); termErr != nil {
-			fmt.Fprintf(os.Stderr, "Warning: failed to terminate container: %v\n", termErr)
+		// Terminate container if we created one
+		if container != nil {
+			if termErr := container.Terminate(ctx); termErr != nil {
+				fmt.Fprintf(os.Stderr, "Warning: failed to terminate container: %v\n", termErr)
+			}
 		}
 
 		if err != nil {

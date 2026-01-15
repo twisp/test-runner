@@ -36,19 +36,18 @@ type Options struct {
 	FailFast bool // Stop on first failure
 }
 
-// Runner executes GraphQL tests against a Twisp container.
+// Runner executes GraphQL tests against a Twisp endpoint.
 type Runner struct {
-	container *TwispContainer
 	client    *GraphQLClient
 	options   Options
 	accountID string
 }
 
-// NewRunner creates a new test runner with the given container.
-func NewRunner(container *TwispContainer, options Options, accountID string) *Runner {
+// NewRunner creates a new test runner for the given GraphQL endpoint.
+// Custom headers will be applied to all requests (overriding defaults if same key).
+func NewRunner(endpoint string, options Options, accountID string, headers map[string]string) *Runner {
 	return &Runner{
-		container: container,
-		client:    NewGraphQLClient(container.GraphQLURL, accountID),
+		client:    NewGraphQLClient(endpoint, accountID, headers),
 		options:   options,
 		accountID: accountID,
 	}

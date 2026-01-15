@@ -15,6 +15,7 @@ type GraphQLClient struct {
 	endpoint   string
 	httpClient *http.Client
 	accountID  string
+	headers    map[string]string
 }
 
 // GraphQLRequest represents a GraphQL request body.
@@ -24,10 +25,12 @@ type GraphQLRequest struct {
 }
 
 // NewGraphQLClient creates a new GraphQL client for the given endpoint.
-func NewGraphQLClient(endpoint string, accountID string) *GraphQLClient {
+// Custom headers will override default headers (Content-Type, X-Twisp-Account-Id).
+func NewGraphQLClient(endpoint string, accountID string, headers map[string]string) *GraphQLClient {
 	return &GraphQLClient{
 		endpoint:  endpoint,
 		accountID: accountID,
+		headers:   headers,
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
@@ -53,6 +56,11 @@ func (c *GraphQLClient) Execute(ctx context.Context, query string, variables map
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Twisp-Account-Id", c.accountID)
+
+	// Apply custom headers (override defaults if same key)
+	for key, value := range c.headers {
+		req.Header.Set(key, value)
+	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

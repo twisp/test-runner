@@ -12,8 +12,17 @@ Twisp GraphQL Test Runner - a CLI tool for running GraphQL test fixtures against
 # Build the binary
 go build -o test-runner
 
-# Run tests against a fixture directory
+# Run tests against a fixture directory (uses testcontainers)
 ./test-runner --test_suite_path /path/to/fixtures
+
+# Run against an external endpoint (skips container creation)
+./test-runner --endpoint http://localhost:8080/financial/v1/graphql --test_suite_path /path/to/fixtures
+
+# Run with custom headers (useful for auth tokens)
+./test-runner --endpoint http://api.example.com/graphql \
+  --header "Authorization: Bearer token" \
+  --header "X-Custom-Header: value" \
+  --test_suite_path /path/to/fixtures
 
 # Run with verbose output (shows response diffs)
 ./test-runner --test_suite_path /path/to/fixtures --verbose
@@ -38,12 +47,13 @@ The project follows a simple structure with the main entry point and a `runner` 
 
 ### Test Discovery and Execution Flow
 
-1. Each `--test_suite_path` gets its own isolated container
+1. Each `--test_suite_path` gets its own isolated container (or uses `--endpoint` if provided)
 2. `DiscoverTests()` walks the directory tree building a `Suites` map
 3. Tests are ordered by sequence prefix (e.g., `001_`, `002_`) then alphabetically
-4. For each test: read `request.gql`, optionally `variables.json`, execute against container
+4. For each test: read `request.gql`, optionally `variables.json`, execute against endpoint
 5. Apply `transform.jq` filters (if present) to both actual and expected responses
 6. Compare JSON semantically (order-independent)
+7. Custom `--header` flags are applied to all requests, overriding defaults
 
 ### Test Fixture Structure
 
@@ -61,5 +71,5 @@ Directories containing `SKIP` in the path are ignored.
 
 ## Dependencies
 
-- Docker must be running (required by testcontainers-go)
-- Access to `public.ecr.aws/twisp/local:latest` image
+- Docker must be running (required by testcontainers-go, not needed when using `--endpoint`)
+- Access to `public.ecr.aws/twisp/local:latest` image (not needed when using `--endpoint`)
