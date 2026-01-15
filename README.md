@@ -19,6 +19,9 @@ go build -o test-runner
 ## Usage
 
 ```bash
+# Run the example book-transfer suite
+./test-runner --test_suite_path ./example-suites/book-transfer
+
 # Run a single test suite
 ./test-runner --test_suite_path /path/to/fixtures/errors
 
