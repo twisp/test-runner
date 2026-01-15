@@ -40,14 +40,16 @@ type Runner struct {
 	container *TwispContainer
 	client    *GraphQLClient
 	options   Options
+	accountID string
 }
 
 // NewRunner creates a new test runner with the given container.
-func NewRunner(container *TwispContainer, options Options) *Runner {
+func NewRunner(container *TwispContainer, options Options, accountID string) *Runner {
 	return &Runner{
 		container: container,
-		client:    NewGraphQLClient(container.GraphQLURL),
+		client:    NewGraphQLClient(container.GraphQLURL, accountID),
 		options:   options,
+		accountID: accountID,
 	}
 }
 

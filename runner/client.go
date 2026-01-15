@@ -14,6 +14,7 @@ import (
 type GraphQLClient struct {
 	endpoint   string
 	httpClient *http.Client
+	accountID  string
 }
 
 // GraphQLRequest represents a GraphQL request body.
@@ -23,9 +24,10 @@ type GraphQLRequest struct {
 }
 
 // NewGraphQLClient creates a new GraphQL client for the given endpoint.
-func NewGraphQLClient(endpoint string) *GraphQLClient {
+func NewGraphQLClient(endpoint string, accountID string) *GraphQLClient {
 	return &GraphQLClient{
-		endpoint: endpoint,
+		endpoint:  endpoint,
+		accountID: accountID,
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
@@ -50,6 +52,7 @@ func (c *GraphQLClient) Execute(ctx context.Context, query string, variables map
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Twisp-Account-Id", c.accountID)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

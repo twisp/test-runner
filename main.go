@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"os"
@@ -21,6 +23,12 @@ func (s *stringSlice) String() string {
 func (s *stringSlice) Set(value string) error {
 	*s = append(*s, value)
 	return nil
+}
+
+// hashSuitePath returns a SHA256 hash of the suite path for use as account ID.
+func hashSuitePath(path string) string {
+	h := sha256.Sum256([]byte(path))
+	return hex.EncodeToString(h[:])
 }
 
 func main() {
@@ -75,7 +83,8 @@ func main() {
 
 		fmt.Printf("Container ready at: %s\n", container.GraphQLURL)
 
-		r := runner.NewRunner(container, options)
+		accountID := hashSuitePath(suitePath)
+		r := runner.NewRunner(container, options, accountID)
 		result, err := r.RunSuite(ctx, suitePath)
 
 		// Always try to terminate the container
