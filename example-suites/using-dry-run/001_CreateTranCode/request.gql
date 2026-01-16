@@ -1,0 +1,65 @@
+mutation CreateTranCode {
+  createTranCode(
+    input: {
+      tranCodeId: "9eb60ed8-438e-4d99-9bd6-ba94f2b91e91"
+      code: "BOOK_TRANSFER"
+      description: "Book transfer between two internal accounts."
+      metadata: { category: "Internal" }
+      params: [
+        { name: "crAccount", type: UUID, description: "Account to credit." }
+        { name: "drAccount", type: UUID, description: "Account to debit." }
+        {
+          name: "amount"
+          type: DECIMAL
+          description: "Amount with decimal, e.g. `1.23`."
+        }
+        {
+          name: "currency"
+          type: STRING
+          description: "Currency used for transaction."
+        }
+        {
+          name: "effective"
+          type: TIMESTAMP
+          description: "Effective date for transaction."
+        }
+        { name: "journalId", type: UUID, description: "Journal" }
+        {
+          name: "correlationId"
+          type: STRING
+          description: "Correlation Id"
+          default: "_unspecified_"
+        }
+        { name: "metadata", type: JSON, description: "Metadata", default: "{}" }
+        { name: "layer", type: INTEGER, description: "layer", default: 0 }
+      ]
+      transaction: {
+        journalId: "params.journalId"
+        effective: "date(params.effective)"
+        description: "'Book transfer for $' + string(params.amount)"
+        correlationId: "string(params.correlationId != '_unspecified_' ? params.correlationId:uuid.New())"
+        metadata: "params.metadata"
+      }
+      entries: [
+        {
+          accountId: "params.drAccount"
+          units: "params.amount"
+          currency: "params.currency"
+          direction: "DEBIT"
+          layer: "params.layer"
+          metadata: "params.metadata"
+        }
+        {
+          accountId: "params.crAccount"
+          units: "params.amount"
+          currency: "params.currency"
+          direction: "CREDIT"
+          layer: "params.layer"
+          metadata: "params.metadata"
+        }
+      ]
+    }
+  ) {
+    tranCodeId
+  }
+}

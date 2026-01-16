@@ -1,0 +1,92 @@
+mutation PostAndVerify(
+  $amountA: Decimal = "21.00"
+  $amountB: Decimal = "29.00"
+  $effective: Timestamp = "2025-01-01T01:00:00Z"
+  $transactionIdA: UUID! = "173d7c68-f24b-11f0-81b9-069b540ea27c"
+  $transactionIdB: UUID! = "19459860-f24b-11f0-a3cd-069b540ea27c"
+  $policyId: String = "abc123"
+  $account1: UUID = "6c6affb0-5cf5-402b-8d84-01bfc1624a2c"
+  $account2: UUID = "f4a3cb70-9ace-4885-a3ca-d0b3a37bd847"
+) @dryRun {
+  a: postTransaction(
+    input: {
+      transactionId: $transactionIdA
+      tranCode: "BOOK_TRANSFER"
+      params: {
+        journalId: "00000000-0000-0000-0000-000000000000"
+        correlationId: "a2aa5351-9228-4d53-b500-3cef1f4a2cf4"
+        crAccount: $account1
+        drAccount: $account2
+        amount: $amountA
+        currency: "USD"
+        effective: $effective
+        metadata: { policyId: $policyId }
+        layer: 0
+      }
+    }
+  ) {
+    transactionId
+  }
+
+  b: postTransaction(
+    input: {
+      transactionId: $transactionIdB
+      tranCode: "BOOK_TRANSFER"
+      params: {
+        journalId: "00000000-0000-0000-0000-000000000000"
+        correlationId: "a2aa5351-9228-4d53-b500-3cef1f4a2cf4"
+        crAccount: $account1
+        drAccount: $account2
+        amount: $amountB
+        currency: "USD"
+        effective: $effective
+        metadata: { policyId: $policyId }
+        layer: 0
+      }
+    }
+  ) {
+    transactionId
+  }
+
+  # Verify balances
+  acct1Balance: queries {
+    balance(accountId: $account1) {
+      available(layer: SETTLED) {
+        normalBalance {
+          units
+        }
+      }
+      entries(first: 1000) {
+        nodes {
+          metadata
+          amount {
+            units
+          }
+          transaction {
+            metadata
+          }
+        }
+      }
+    }
+  }
+  acct2Balance: queries {
+    balance(accountId: $account2) {
+      available(layer: SETTLED) {
+        normalBalance {
+          units
+        }
+      }
+      entries(first: 1000) {
+        nodes {
+          metadata
+          amount {
+            units
+          }
+          transaction {
+            metadata
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+mutation Setup {
+  createJournal(
+    input: {
+      journalId: "00000000-0000-0000-0000-000000000000"
+      code: "GL"
+      name: "GL"
+    }
+  ) {
+    journalId
+  }
+  cash: createAccount(
+    input: {
+      accountId: "f4a3cb70-9ace-4885-a3ca-d0b3a37bd847"
+      name: "cash"
+      code: "cash"
+      normalBalanceType: DEBIT
+    }
+  ) {
+    accountId
+  }
+
+  a: createAccount(
+    input: {
+      accountId: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c"
+      name: "position 1"
+      code: "position 1"
+      normalBalanceType: CREDIT
+    }
+  ) {
+    accountId
+    name
+  }
+}

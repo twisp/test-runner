@@ -1,0 +1,44 @@
+{
+  "data": {
+    "a": { "transactionId": "173d7c68-f24b-11f0-81b9-069b540ea27c" },
+    "b": { "transactionId": "19459860-f24b-11f0-a3cd-069b540ea27c" },
+    "acct1Balance": {
+      "balance": {
+        "available": { "normalBalance": { "units": "25.00" } },
+        "entries": {
+          "nodes": [
+            {
+              "metadata": { "policyId": "abc123" },
+              "amount": { "units": "15.00" },
+              "transaction": { "metadata": { "policyId": "abc123" } }
+            },
+            {
+              "metadata": { "policyId": "abc123" },
+              "amount": { "units": "10.00" },
+              "transaction": { "metadata": { "policyId": "abc123" } }
+            }
+          ]
+        }
+      }
+    },
+    "acct2Balance": {
+      "balance": {
+        "available": { "normalBalance": { "units": "25.00" } },
+        "entries": {
+          "nodes": [
+            {
+              "metadata": { "policyId": "abc123" },
+              "amount": { "units": "15.00" },
+              "transaction": { "metadata": { "policyId": "abc123" } }
+            },
+            {
+              "metadata": { "policyId": "abc123" },
+              "amount": { "units": "10.00" },
+              "transaction": { "metadata": { "policyId": "abc123" } }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
