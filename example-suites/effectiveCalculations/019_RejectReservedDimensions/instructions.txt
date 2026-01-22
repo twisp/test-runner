@@ -1,0 +1,1 @@
+Attempt to query with a reserved dimension name (year). Verify that the system rejects the query with an appropriate error message indicating that 'year', 'month', and 'day' are reserved for effective dates.

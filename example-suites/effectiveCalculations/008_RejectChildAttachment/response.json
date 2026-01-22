@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "message": "input: attachCalculation cannot attach child effective calculation - attach parent instead",
+      "path": ["attachCalculation"],
+      "extensions": { "code": "BAD_REQUEST", "retriableError": false }
+    }
+  ],
+  "data": null
+}

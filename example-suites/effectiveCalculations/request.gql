@@ -1,0 +1,32 @@
+mutation Setup {
+  test1: createAccount(
+    input: {
+      accountId: "e5703d6c-d484-11f0-bcff-069b540ea27c"
+      code: "test1"
+      name: "test1"
+      description: "test1"
+    }
+  ) {
+    accountId
+  }
+  test2: createAccount(
+    input: {
+      accountId: "e5703d6c-d484-11f0-bcff-069b540ea27e"
+      code: "test2"
+      name: "test2"
+      description: "test2"
+    }
+  ) {
+    accountId
+  }
+  createJournal(
+    input: {
+      journalId: "11111111-1111-1111-1111-111111111111"
+      name: "Test Journal"
+      description: "Journal for effective calculation tests"
+    }
+  ) {
+    journalId
+    name
+  }
+}

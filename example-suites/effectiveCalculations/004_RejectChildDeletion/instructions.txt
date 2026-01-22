@@ -1,0 +1,1 @@
+Attempt to delete a child calculation should fail with BadRequest error. Child calculations can only be deleted by deleting the parent.

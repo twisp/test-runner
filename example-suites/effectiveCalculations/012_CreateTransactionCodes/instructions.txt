@@ -1,0 +1,1 @@
+Create deposit and withdrawal transaction codes for effective calculation testing. These codes include merchant_id and category metadata parameters that will be used to test effective balance queries with custom dimensions.

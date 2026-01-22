@@ -1,0 +1,20 @@
+{
+  "data": {
+    "createCalculation": {
+      "calculationId": "22222222-2222-2222-2222-222222222222",
+      "code": "merchant_balances",
+      "description": "Balances by merchant with effective date rollups",
+      "config": { "enableEffectiveBalances": true },
+      "dimensions": [
+        {
+          "alias": "merchant_id",
+          "value": "string(context.vars.entry.metadata.?merchant_id.orValue(''))"
+        },
+        {
+          "alias": "category",
+          "value": "string(context.vars.entry.metadata.?category.orValue(''))"
+        }
+      ]
+    }
+  }
+}

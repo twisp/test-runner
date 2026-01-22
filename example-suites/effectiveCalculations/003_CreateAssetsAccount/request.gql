@@ -1,0 +1,15 @@
+mutation CreateAssetsAccount {
+  createAccount(
+    input: {
+      accountId: "78551b96-9c34-46f9-8d5f-c86e4459fcd7"
+      name: "Assets"
+      code: "ASSETS"
+      description: "Assets account for contra entries"
+      normalBalanceType: DEBIT
+    }
+  ) {
+    accountId
+    name
+    normalBalanceType
+  }
+}

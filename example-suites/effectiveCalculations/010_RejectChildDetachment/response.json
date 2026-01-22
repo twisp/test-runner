@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "message": "input: detachCalculation cannot detach child effective calculation - detach parent instead",
+      "path": ["detachCalculation"],
+      "extensions": { "code": "BAD_REQUEST", "retriableError": false }
+    }
+  ],
+  "data": { "detachCalculation": null }
+}

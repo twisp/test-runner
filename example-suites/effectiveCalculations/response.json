@@ -1,0 +1,10 @@
+{
+  "data": {
+    "test1": { "accountId": "e5703d6c-d484-11f0-bcff-069b540ea27c" },
+    "test2": { "accountId": "e5703d6c-d484-11f0-bcff-069b540ea27e" },
+    "createJournal": {
+      "journalId": "11111111-1111-1111-1111-111111111111",
+      "name": "Test Journal"
+    }
+  }
+}

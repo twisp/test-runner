@@ -1,0 +1,5 @@
+mutation DeleteParentCalculation {
+  deleteCalculation(id: "b962e336-d534-11f0-99e3-069b540ea27c") {
+    calculationId
+  }
+}

@@ -1,0 +1,1 @@
+Query cumulative effective balance with custom calculation. Verify that the system correctly calculates the cumulative balance from the start through the specified date.

@@ -1,0 +1,1 @@
+Query effective balance with calculation that has no custom dimensions. Verify that effective date dimensions are still properly set and the query works without any custom dimensions provided.

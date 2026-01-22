@@ -1,0 +1,9 @@
+{
+  "data": {
+    "createAccount": {
+      "accountId": "78551b96-9c34-46f9-8d5f-c86e4459fcd7",
+      "name": "Assets",
+      "normalBalanceType": "DEBIT"
+    }
+  }
+}

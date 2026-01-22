@@ -1,0 +1,1 @@
+Create a calculation without enable_effective set, then attempt to query it with an effective period. Verify that the system rejects the query with an error indicating the calculation does not have enable_effective set.

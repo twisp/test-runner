@@ -1,0 +1,9 @@
+{
+  "data": {
+    "noDimensions": {
+      "available": { "crBalance": { "units": "3000.00" }, "drBalance": { "units": "0" } },
+      "calculationId": "63005bbb-e73e-56cd-9207-4529c14488e1",
+      "dimensions": { "month": 2, "year": 2024 }
+    }
+  }
+}

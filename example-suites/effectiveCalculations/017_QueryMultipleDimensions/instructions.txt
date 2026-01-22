@@ -1,0 +1,1 @@
+Query effective balance with multiple custom dimensions (merchant_id and category). Verify that all custom dimensions are properly merged with effective date dimensions in the response.

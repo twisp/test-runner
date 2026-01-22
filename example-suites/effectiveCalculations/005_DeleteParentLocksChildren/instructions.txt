@@ -1,0 +1,1 @@
+Deleting a parent effective calculation should lock all child calculations. Query the child calculations after deletion to verify their status is LOCKED.

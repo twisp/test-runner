@@ -1,0 +1,1 @@
+Create assets account that will be used as the contra account for transaction entries.

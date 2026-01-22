@@ -1,0 +1,31 @@
+mutation CreateAndQueryNonEffectiveCalculation {
+  createCalculation: createCalculation(
+    input: {
+      calculationId: "44444444-4444-4444-4444-444444444444"
+      code: "non_effective_calc"
+      description: "not effective"
+      dimensions: []
+    }
+  ) {
+    calculationId
+    code
+    config {
+      enableEffectiveBalances
+    }
+  }
+
+  attemptQuery: queries {
+    balance(
+      accountId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      journalId: "11111111-1111-1111-1111-111111111111"
+      calculationId: "44444444-4444-4444-4444-444444444444"
+      effective: { period: "2024" }
+    ) {
+      available(layer: SETTLED) {
+        crBalance {
+          units
+        }
+      }
+    }
+  }
+}

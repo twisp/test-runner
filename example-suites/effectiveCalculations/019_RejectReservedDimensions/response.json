@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "message": "input: error dimension 'year' is reserved for effective dates",
+      "path": ["error"],
+      "extensions": { "code": "BAD_REQUEST", "retriableError": false }
+    }
+  ],
+  "data": { "error": null }
+}

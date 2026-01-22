@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "message": "input: deleteCalculation cannot delete child effective calculation - delete parent instead",
+      "path": ["deleteCalculation"],
+      "extensions": { "code": "BAD_REQUEST", "retriableError": false }
+    }
+  ],
+  "data": { "deleteCalculation": null }
+}

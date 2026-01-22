@@ -1,0 +1,25 @@
+{
+  "data": {
+    "year": {
+      "available": { "crBalance": { "units": "6000.00" }, "drBalance": { "units": "0" } },
+      "calculationId": "25c6d76d-9e22-5726-8e13-53bfe3f60e88",
+      "dimensions": { "category": "FOOD", "merchant_id": "M001", "year": 2024 }
+    },
+    "month": {
+      "available": { "crBalance": { "units": "2000.00" }, "drBalance": { "units": "0" } },
+      "calculationId": "61d544eb-7a1a-5fdc-8494-a89b795aab75",
+      "dimensions": { "category": "FOOD", "merchant_id": "M001", "month": 2, "year": 2024 }
+    },
+    "day": {
+      "available": { "crBalance": { "units": "2000.00" }, "drBalance": { "units": "0" } },
+      "calculationId": "8b01e31e-5df4-5e4e-a68c-1f3e0f1db826",
+      "dimensions": {
+        "category": "FOOD",
+        "day": 15,
+        "merchant_id": "M001",
+        "month": 2,
+        "year": 2024
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "data": {
+    "v1": {
+      "calculationId": "33333333-3333-3333-3333-333333333333",
+      "code": "simple_effective",
+      "config": { "enableEffectiveBalances": true }
+    },
+    "v2": {
+      "calculationId": "b962e336-d534-11f0-99e3-069b540ea27c",
+      "code": "detach_simple_effective",
+      "config": { "enableEffectiveBalances": true }
+    }
+  }
+}

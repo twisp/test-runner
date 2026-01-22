@@ -1,0 +1,1 @@
+Create an effective calculation with custom dimensions. Should create parent plus 3 child calculations (YYYY, YYYYMM, YYYYMMDD) with effective date dimensions prepended to custom dimensions.

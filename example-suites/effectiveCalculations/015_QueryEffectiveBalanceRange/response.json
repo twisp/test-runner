@@ -1,0 +1,9 @@
+{
+  "data": {
+    "range": {
+      "available": { "crBalance": { "units": "3000.00" }, "drBalance": { "units": "0.00" } },
+      "calculationId": "22222222-2222-2222-2222-222222222222",
+      "dimensions": { "category": "FOOD", "merchant_id": "M001" }
+    }
+  }
+}

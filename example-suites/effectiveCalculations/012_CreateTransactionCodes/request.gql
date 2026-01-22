@@ -1,0 +1,105 @@
+mutation CreateTransactionCodes($depositId: UUID!, $withdrawalId: UUID!) {
+  deposit: createTranCode(
+    input: {
+      tranCodeId: $depositId
+      code: "MERCHANT_DEPOSIT"
+      description: "Deposit transaction with merchant metadata for effective calculations."
+      params: [
+        { name: "account", type: UUID, description: "Deposit account ID." }
+        { name: "amount", type: DECIMAL, description: "Amount with decimal, e.g. `1.23`." }
+        { name: "effective", type: DATE, description: "Effective date for transaction." }
+        {
+          name: "merchant_id"
+          type: STRING
+          description: "Merchant identifier for dimensional analysis."
+        }
+        {
+          name: "category"
+          type: STRING
+          description: "Transaction category for dimensional analysis."
+        }
+      ]
+      transaction: {
+        journalId: "uuid('11111111-1111-1111-1111-111111111111')"
+        effective: "params.effective"
+        correlationId: "transaction_id.toString()"
+        metadata: "{'merchant_id': params.merchant_id, 'category': params.category}"
+      }
+      entries: [
+        {
+          accountId: "uuid('78551b96-9c34-46f9-8d5f-c86e4459fcd7')"
+          units: "params.amount"
+          currency: "'USD'"
+          entryType: "'MERCHANT_DR'"
+          direction: "DEBIT"
+          layer: "SETTLED"
+          metadata: "{'merchant_id': params.merchant_id, 'category': params.category}"
+        }
+        {
+          accountId: "params.account"
+          units: "params.amount"
+          currency: "'USD'"
+          entryType: "'MERCHANT_CR'"
+          direction: "CREDIT"
+          layer: "SETTLED"
+          metadata: "{'merchant_id': params.merchant_id, 'category': params.category}"
+        }
+      ]
+    }
+  ) {
+    tranCodeId
+    code
+  }
+
+  withdrawal: createTranCode(
+    input: {
+      tranCodeId: $withdrawalId
+      code: "MERCHANT_WITHDRAWAL"
+      description: "Withdrawal transaction with merchant metadata for effective calculations."
+      params: [
+        { name: "account", type: UUID, description: "Withdrawal account ID." }
+        { name: "amount", type: DECIMAL, description: "Amount with decimal, e.g. `1.23`." }
+        { name: "effective", type: DATE, description: "Effective date for transaction." }
+        {
+          name: "merchant_id"
+          type: STRING
+          description: "Merchant identifier for dimensional analysis."
+        }
+        {
+          name: "category"
+          type: STRING
+          description: "Transaction category for dimensional analysis."
+        }
+      ]
+      transaction: {
+        journalId: "uuid('11111111-1111-1111-1111-111111111111')"
+        effective: "params.effective"
+        correlationId: "transaction_id.toString()"
+        metadata: "{'merchant_id': params.merchant_id, 'category': params.category}"
+      }
+      entries: [
+        {
+          accountId: "uuid('78551b96-9c34-46f9-8d5f-c86e4459fcd7')"
+          units: "params.amount"
+          currency: "'USD'"
+          entryType: "'MERCHANT_CR'"
+          direction: "CREDIT"
+          layer: "SETTLED"
+          metadata: "{'merchant_id': params.merchant_id, 'category': params.category}"
+        }
+        {
+          accountId: "params.account"
+          units: "params.amount"
+          currency: "'USD'"
+          entryType: "'MERCHANT_DR'"
+          direction: "DEBIT"
+          layer: "SETTLED"
+          metadata: "{'merchant_id': params.merchant_id, 'category': params.category}"
+        }
+      ]
+    }
+  ) {
+    tranCodeId
+    code
+  }
+}

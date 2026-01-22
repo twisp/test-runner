@@ -1,0 +1,1 @@
+Query effective balances with custom calculations at different granularities (YEAR, MONTH, DAY). Verify that the system correctly resolves the parent calculationId to the appropriate child calculation based on the period format, and that dimensions are properly merged with effective date components prepended to custom dimensions.

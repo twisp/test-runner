@@ -1,0 +1,1 @@
+Detaching a parent calculation should detach all child calculations. All 4 attached calculations should be removed from the partition.

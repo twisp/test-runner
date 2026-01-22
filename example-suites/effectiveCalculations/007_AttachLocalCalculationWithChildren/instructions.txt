@@ -1,0 +1,1 @@
+Attach a LOCAL effective calculation to a partition. All 4 calculations (parent + 3 children) should be attached and backfilled.

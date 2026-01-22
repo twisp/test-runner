@@ -1,0 +1,97 @@
+mutation PostTransactions {
+  m001FoodJan: postTransaction(
+    input: {
+      transactionId: "10000000-0000-0000-0000-000000000001"
+      tranCode: "MERCHANT_DEPOSIT"
+      params: {
+        account: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        amount: "1000.00"
+        effective: "2024-01-15"
+        merchant_id: "M001"
+        category: "FOOD"
+      }
+    }
+  ) {
+    transactionId
+  }
+
+  m001FoodFeb: postTransaction(
+    input: {
+      transactionId: "20000000-0000-0000-0000-000000000002"
+      tranCode: "MERCHANT_DEPOSIT"
+      params: {
+        account: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        amount: "2000.00"
+        effective: "2024-02-15"
+        merchant_id: "M001"
+        category: "FOOD"
+      }
+    }
+  ) {
+    transactionId
+  }
+
+  m001FoodMar: postTransaction(
+    input: {
+      transactionId: "30000000-0000-0000-0000-000000000003"
+      tranCode: "MERCHANT_DEPOSIT"
+      params: {
+        account: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        amount: "3000.00"
+        effective: "2024-03-15"
+        merchant_id: "M001"
+        category: "FOOD"
+      }
+    }
+  ) {
+    transactionId
+  }
+
+  m001TravelJan: postTransaction(
+    input: {
+      transactionId: "40000000-0000-0000-0000-000000000004"
+      tranCode: "MERCHANT_DEPOSIT"
+      params: {
+        account: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        amount: "500.00"
+        effective: "2024-01-20"
+        merchant_id: "M001"
+        category: "TRAVEL"
+      }
+    }
+  ) {
+    transactionId
+  }
+
+  m001TravelFeb: postTransaction(
+    input: {
+      transactionId: "50000000-0000-0000-0000-000000000005"
+      tranCode: "MERCHANT_DEPOSIT"
+      params: {
+        account: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        amount: "1000.00"
+        effective: "2024-02-20"
+        merchant_id: "M001"
+        category: "TRAVEL"
+      }
+    }
+  ) {
+    transactionId
+  }
+
+  m002FoodJan: postTransaction(
+    input: {
+      transactionId: "60000000-0000-0000-0000-000000000006"
+      tranCode: "MERCHANT_DEPOSIT"
+      params: {
+        account: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        amount: "750.00"
+        effective: "2024-01-25"
+        merchant_id: "M002"
+        category: "FOOD"
+      }
+    }
+  ) {
+    transactionId
+  }
+}

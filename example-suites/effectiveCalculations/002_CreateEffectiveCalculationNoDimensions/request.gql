@@ -1,0 +1,34 @@
+mutation CreateEffectiveCalculationNoDims {
+  v1: createCalculation(
+    input: {
+      calculationId: "33333333-3333-3333-3333-333333333333"
+      code: "simple_effective"
+      description: "Simple effective calculation with no custom dimensions"
+      dimensions: []
+      scope: GLOBAL
+      config: { enableEffectiveBalances: true }
+    }
+  ) {
+    calculationId
+    code
+    config {
+      enableEffectiveBalances
+    }
+  }
+  v2: createCalculation(
+    input: {
+      calculationId: "b962e336-d534-11f0-99e3-069b540ea27c"
+      code: "detach_simple_effective"
+      description: "Simple effective calculation with no custom dimensions"
+      dimensions: []
+      scope: GLOBAL
+      config: { enableEffectiveBalances: true }
+    }
+  ) {
+    calculationId
+    code
+    config {
+      enableEffectiveBalances
+    }
+  }
+}

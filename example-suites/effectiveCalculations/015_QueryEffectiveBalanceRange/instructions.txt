@@ -1,0 +1,1 @@
+Query effective balance range with custom calculation. Verify that the system correctly aggregates balances across multiple periods and includes effectiveBalances array with individual period balances.

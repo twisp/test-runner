@@ -1,0 +1,1 @@
+Attempt to attach a child calculation directly should fail with BadRequest error. Only parent calculations can be attached.

@@ -1,0 +1,30 @@
+mutation CreateEffectiveCalculation {
+  createCalculation(
+    input: {
+      calculationId: "22222222-2222-2222-2222-222222222222"
+      code: "merchant_balances"
+      description: "Balances by merchant with effective date rollups"
+      dimensions: [
+        {
+          alias: "merchant_id"
+          value: "string(context.vars.entry.metadata.?merchant_id.orValue(''))"
+        }
+        { alias: "category", value: "string(context.vars.entry.metadata.?category.orValue(''))" }
+      ]
+      condition: "context.vars.entry.metadata != null && ('merchant_id' in context.vars.entry.metadata) && ('category' in context.vars.entry.metadata)"
+      scope: GLOBAL
+      config: { enableEffectiveBalances: true }
+    }
+  ) {
+    calculationId
+    code
+    description
+    config {
+      enableEffectiveBalances
+    }
+    dimensions {
+      alias
+      value
+    }
+  }
+}

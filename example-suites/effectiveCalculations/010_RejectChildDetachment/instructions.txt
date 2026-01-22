@@ -1,0 +1,1 @@
+Attempt to detach a child calculation directly should fail with BadRequest error. Only parent calculations can be detached.

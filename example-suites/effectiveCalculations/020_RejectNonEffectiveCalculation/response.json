@@ -1,0 +1,17 @@
+{
+  "errors": [
+    {
+      "message": "input: attemptQuery.balance failed to resolve effective calculation: calculation does not have enable_effective set",
+      "path": ["attemptQuery", "balance"],
+      "extensions": { "code": "BAD_REQUEST", "retriableError": false }
+    }
+  ],
+  "data": {
+    "createCalculation": {
+      "calculationId": "44444444-4444-4444-4444-444444444444",
+      "code": "non_effective_calc",
+      "config": null
+    },
+    "attemptQuery": { "balance": null }
+  }
+}

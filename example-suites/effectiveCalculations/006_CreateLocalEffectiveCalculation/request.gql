@@ -1,0 +1,22 @@
+mutation CreateLocalEffectiveCalculation {
+  createCalculation(
+    input: {
+      calculationId: "77777777-7777-7777-7777-777777777777"
+      code: "local_effective_calc"
+      description: "Local calculation with effective enabled"
+      dimensions: [
+        { alias: "blah", value: "string(context.vars.entry.metadata.?blah.orValue(''))" }
+      ]
+      condition: "context.vars.entry.metadata != null && 'blah' in context.vars.entry.metadata"
+      scope: LOCAL
+      config: { enableEffectiveBalances: true }
+    }
+  ) {
+    calculationId
+    code
+    scope
+    config {
+      enableEffectiveBalances
+    }
+  }
+}
