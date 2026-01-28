@@ -51,11 +51,15 @@ func main() {
 	var verbose bool
 	var failFast bool
 	var endpoint string
+	var image string
+	var pull bool
 
 	flag.Var(&suitePaths, "test_suite_path", "Path to a test suite directory (can be specified multiple times)")
 	flag.BoolVar(&verbose, "verbose", false, "Print detailed output including response diffs")
 	flag.BoolVar(&failFast, "fail-fast", false, "Stop execution on first test failure")
 	flag.StringVar(&endpoint, "endpoint", "", "External GraphQL endpoint URL (skips container creation)")
+	flag.StringVar(&image, "image", runner.TwispImage, "Fully qualified Docker image to use for local container")
+	flag.BoolVar(&pull, "pull", false, "Always pull the container image before starting")
 	flag.Var(&headerFlags, "header", "Custom header in 'Key: Value' format (can be specified multiple times)")
 	flag.Parse()
 
@@ -113,7 +117,7 @@ func main() {
 			fmt.Printf("========================================\n")
 
 			var err error
-			container, err = runner.StartTwispContainer(ctx)
+			container, err = runner.StartTwispContainer(ctx, image, pull)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error starting container: %v\n", err)
 				os.Exit(1)

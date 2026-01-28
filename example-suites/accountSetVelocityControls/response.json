@@ -1,0 +1,17 @@
+{
+  "data": {
+    "r1": { "velocityLimitId": "1be4132a-a389-45c3-9a61-0fe601d1ba8b" },
+    "rejectControl": { "velocityControlId": "f6f27892-dfd8-480b-9213-d6adf7ef04ef" },
+    "createJournal": { "journalId": "00000000-0000-0000-0000-000000000000" },
+    "set": { "accountSetId": "480ff40e-016c-4677-80ee-2b62bd34182d" },
+    "card1": { "accountId": "6c6affb0-5cf5-402b-8d84-01bfc1624a2c", "name": "cards.1" },
+    "card2": { "accountId": "bf716346-9eee-4ec5-bbc3-64c47de7d929", "name": "cards.2" },
+    "setControl": { "velocityControlId": "f6f27892-dfd8-480b-9213-d6adf7ef04ef" },
+    "card1Control": { "velocityControlId": "f6f27892-dfd8-480b-9213-d6adf7ef04ef" },
+    "card2Control": { "velocityControlId": "f6f27892-dfd8-480b-9213-d6adf7ef04ef" },
+    "addCard1ToSet": { "accountSetId": "480ff40e-016c-4677-80ee-2b62bd34182d" },
+    "addCard2ToSet": { "accountSetId": "480ff40e-016c-4677-80ee-2b62bd34182d" },
+    "settle": { "accountId": "a767e377-0f35-401f-8f21-84c121b6dc00" },
+    "createTranCode": { "tranCodeId": "9eb60ed8-438e-4d99-9bd6-ba94f2b91e91" }
+  }
+}

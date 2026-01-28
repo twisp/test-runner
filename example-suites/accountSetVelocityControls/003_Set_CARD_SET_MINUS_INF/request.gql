@@ -1,0 +1,10 @@
+# re-attach the control but now make the limit -inf ... should start rejecting any transactions on the set.
+mutation SetCardSetMinusInf {
+  setControl: attachVelocityControl(
+    accountId: "480ff40e-016c-4677-80ee-2b62bd34182d"
+    velocityControlId: "f6f27892-dfd8-480b-9213-d6adf7ef04ef"
+    params: { layer: "ENCUMBRANCE", amount: "-inf" }
+  ) {
+    velocityControlId
+  }
+}

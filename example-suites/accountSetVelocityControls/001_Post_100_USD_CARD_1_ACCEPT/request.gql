@@ -1,0 +1,37 @@
+mutation Post100USDAccept {
+  postTransaction(
+    input: {
+      transactionId: "70551688-df89-497f-be56-90cf46f465db"
+      tranCode: "CARD_SETTLE"
+      params: {
+        drAccount: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c"
+        amount: "100.00"
+        currency: "USD"
+        effective: "2022-09-01"
+        correlationId: "42e0a7da-336b-47b2-8ff3-de507c79e777"
+      }
+    }
+  ) {
+    transactionId
+  }
+
+  balance: queries {
+    balance(accountId: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c") {
+      version
+      available(layer: SETTLED) {
+        normalBalance {
+          units
+        }
+      }
+    }
+  }
+
+  velocity: queries {
+    account(id: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c") {
+      velocity(window: {}) {
+        spent
+        remaining
+      }
+    }
+  }
+}

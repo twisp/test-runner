@@ -41,6 +41,12 @@ go build -o test-runner
 
 # With options
 ./test-runner --test_suite_path /path/to/fixtures --verbose --fail-fast
+
+# Use a fully qualified custom image for the local container
+./test-runner --test_suite_path /path/to/fixtures --image registry.example.com/twisp/local:dev
+
+# Always pull the container image before starting
+./test-runner --test_suite_path /path/to/fixtures --pull
 ```
 
 ### Options
@@ -49,6 +55,8 @@ go build -o test-runner
 |------|-------------|
 | `--test_suite_path` | Path to a test suite directory (required, can be repeated) |
 | `--endpoint` | External GraphQL endpoint URL (skips container creation) |
+| `--image` | Fully qualified Docker image to use for the local container (default `public.ecr.aws/twisp/local:latest`) |
+| `--pull` | Always pull the container image before starting |
 | `--header` | Custom header in `Key: Value` format (can be repeated, overrides defaults) |
 | `--verbose` | Print detailed output including response diffs |
 | `--fail-fast` | Stop execution on first test failure |
@@ -106,7 +114,7 @@ walk(if type == "object" then with_entries(select(.key | test("created|modified"
 
 - Go 1.21+
 - Docker (for testcontainers, not required when using `--endpoint`)
-- Access to `public.ecr.aws/twisp/local:latest` image (not required when using `--endpoint`)
+- Access to `public.ecr.aws/twisp/local:latest` image (not required when using `--endpoint`, override with `--image`)
 
 ## Example Output
 

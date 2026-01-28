@@ -1,0 +1,188 @@
+mutation Velocity {
+  r1: createVelocityLimit(
+    input: {
+      velocityLimitId: "1be4132a-a389-45c3-9a61-0fe601d1ba8b"
+      name: "Test Velocity Limit"
+      description: "Test Velocity Limit per effective day"
+      window: []
+      currency: ""
+      limit: {
+        balance: [{ layer: "ENCUMBRANCE", amount: "params.amount", normalBalanceType: "DEBIT" }]
+      }
+      params: [
+        # Settled layer by default
+        { name: "layer", type: STRING, description: "layer", default: "SETTLED" }
+        # For $100.00
+        { name: "amount", type: DECIMAL, description: "amount", default: "100.00" }
+      ]
+    }
+  ) {
+    velocityLimitId
+  }
+
+  rejectControl: createVelocityControl(
+    input: {
+      velocityControlId: "f6f27892-dfd8-480b-9213-d6adf7ef04ef"
+      name: "Reject Debits"
+      description: "Reject if a debit and exceeding the velocity limit"
+      enforcement: { action: REJECT }
+      velocityLimitIds: ["1be4132a-a389-45c3-9a61-0fe601d1ba8b"]
+    }
+  ) {
+    velocityControlId
+  }
+
+  createJournal(
+    input: { journalId: "00000000-0000-0000-0000-000000000000", code: "GL", name: "GL" }
+  ) {
+    journalId
+  }
+
+  set: createAccountSet(
+    input: {
+      accountSetId: "480ff40e-016c-4677-80ee-2b62bd34182d"
+      code: "customers.1"
+      name: "customers.1"
+      description: "customer 1 cards"
+      normalBalanceType: DEBIT
+      #config: { enableConcurrentPosting: true }
+    }
+  ) {
+    accountSetId
+  }
+
+  card1: createAccount(
+    input: {
+      accountId: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c"
+      name: "cards.1"
+      code: "cards.1"
+      description: "card 1"
+      normalBalanceType: DEBIT
+      #config: { enableConcurrentPosting: true }
+    }
+  ) {
+    accountId
+    name
+  }
+
+  card2: createAccount(
+    input: {
+      accountId: "bf716346-9eee-4ec5-bbc3-64c47de7d929"
+      name: "cards.2"
+      code: "cards.2"
+      description: "card 2"
+      normalBalanceType: DEBIT
+      #config: { enableConcurrentPosting: true }
+    }
+  ) {
+    accountId
+    name
+  }
+
+  # Attach the control at the set level... Set can spend inf money.
+  setControl: attachVelocityControl(
+    accountId: "480ff40e-016c-4677-80ee-2b62bd34182d"
+    velocityControlId: "f6f27892-dfd8-480b-9213-d6adf7ef04ef"
+    params: { layer: "ENCUMBRANCE", amount: "inf" }
+  ) {
+    velocityControlId
+  }
+
+  # Attach the control at the card level... Set can spend $100
+  card1Control: attachVelocityControl(
+    accountId: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c"
+    velocityControlId: "f6f27892-dfd8-480b-9213-d6adf7ef04ef"
+    params: { layer: "ENCUMBRANCE", amount: "100.00" }
+  ) {
+    velocityControlId
+  }
+
+  # Attach the control at the card level... Set can spend $100
+  card2Control: attachVelocityControl(
+    accountId: "bf716346-9eee-4ec5-bbc3-64c47de7d929"
+    velocityControlId: "f6f27892-dfd8-480b-9213-d6adf7ef04ef"
+    params: { layer: "ENCUMBRANCE", amount: "100.00" }
+  ) {
+    velocityControlId
+  }
+
+  addCard1ToSet: addToAccountSet(
+    id: "480ff40e-016c-4677-80ee-2b62bd34182d"
+    member: { memberId: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c", memberType: ACCOUNT }
+  ) {
+    accountSetId
+  }
+
+  addCard2ToSet: addToAccountSet(
+    id: "480ff40e-016c-4677-80ee-2b62bd34182d"
+    member: { memberId: "bf716346-9eee-4ec5-bbc3-64c47de7d929", memberType: ACCOUNT }
+  ) {
+    accountSetId
+  }
+
+  settle: createAccount(
+    input: {
+      accountId: "a767e377-0f35-401f-8f21-84c121b6dc00"
+      code: "settlement.mastercard"
+      name: "settlement.mastercard"
+      config: { enableConcurrentPosting: true }
+      normalBalanceType: CREDIT
+    }
+  ) {
+    accountId
+  }
+
+  createTranCode(
+    input: {
+      tranCodeId: "9eb60ed8-438e-4d99-9bd6-ba94f2b91e91"
+      code: "CARD_SETTLE"
+      description: "Book transfer between two internal accounts."
+      metadata: { category: "Internal" }
+      params: [
+        {
+          name: "crAccount"
+          type: UUID
+          description: "Account to credit."
+          default: "a767e377-0f35-401f-8f21-84c121b6dc00"
+        }
+        { name: "drAccount", type: UUID, description: "Account to debit." }
+        { name: "amount", type: DECIMAL, description: "Amount with decimal, e.g. `1.23`." }
+        { name: "currency", type: STRING, description: "Currency used for transaction." }
+        { name: "effective", type: DATE, description: "Effective date for transaction." }
+        {
+          name: "journalId"
+          type: UUID
+          description: "Journal"
+          default: "00000000-0000-0000-0000-000000000000"
+        }
+        { name: "correlationId", type: STRING, description: "Correlation Id" }
+        { name: "metadata", type: JSON, description: "Metadata", default: "{}" }
+      ]
+      transaction: {
+        journalId: "params.journalId"
+        effective: "params.effective"
+        description: "'card settle for $' + string(params.amount)"
+        correlationId: "params.correlationId"
+        metadata: "params.metadata"
+      }
+      entries: [
+        {
+          accountId: "params.drAccount"
+          units: "params.amount"
+          currency: "params.currency"
+          direction: "DEBIT"
+          layer: "SETTLED"
+        }
+        {
+          accountId: "params.crAccount"
+          units: "params.amount"
+          currency: "params.currency"
+          direction: "CREDIT"
+          layer: "SETTLED"
+        }
+      ]
+    }
+  ) {
+    tranCodeId
+  }
+}

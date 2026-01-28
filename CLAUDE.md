@@ -39,7 +39,7 @@ go build -o test-runner
 The project follows a simple structure with the main entry point and a `runner` package:
 
 - `main.go` - CLI entry point, handles flags and orchestrates test suite execution
-- `runner/container.go` - Manages testcontainer lifecycle for `public.ecr.aws/twisp/local:latest`
+- `runner/container.go` - Manages testcontainer lifecycle for `public.ecr.aws/twisp/local:latest` (override with `--image`)
 - `runner/client.go` - HTTP client for GraphQL requests
 - `runner/discovery.go` - Walks directories to find test fixtures, handles test sequencing
 - `runner/runner.go` - Core test execution logic, compares expected vs actual responses
@@ -72,4 +72,4 @@ Directories containing `SKIP` in the path are ignored.
 ## Dependencies
 
 - Docker must be running (required by testcontainers-go, not needed when using `--endpoint`)
-- Access to `public.ecr.aws/twisp/local:latest` image (not needed when using `--endpoint`)
+- Access to `public.ecr.aws/twisp/local:latest` image (not needed when using `--endpoint`, override with `--image`)

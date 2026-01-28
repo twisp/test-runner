@@ -1,0 +1,17 @@
+mutation Post100USDReject {
+  postTransaction(
+    input: {
+      transactionId: "d75d3fec-fc0a-11f0-8713-069b540ea27c"
+      tranCode: "CARD_SETTLE"
+      params: {
+        drAccount: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c"
+        amount: "100.00"
+        currency: "USD"
+        effective: "2022-09-01"
+        correlationId: "42e0a7da-336b-47b2-8ff3-de507c79e777"
+      }
+    }
+  ) {
+    transactionId
+  }
+}

@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/testcontainers/testcontainers-go"
@@ -26,12 +27,17 @@ type TwispContainer struct {
 }
 
 // StartTwispContainer starts a new Twisp container and waits for it to be ready.
-func StartTwispContainer(ctx context.Context) (*TwispContainer, error) {
+func StartTwispContainer(ctx context.Context, image string, alwaysPull bool) (*TwispContainer, error) {
+	if strings.TrimSpace(image) == "" {
+		image = TwispImage
+	}
+
 	req := testcontainers.ContainerRequest{
-		Image:        TwispImage,
-		ExposedPorts: []string{AdminPort + "/tcp", HTTPPort + "/tcp", GRPCPort + "/tcp"},
+		Image:           image,
+		AlwaysPullImage: alwaysPull,
+		ExposedPorts:    []string{AdminPort + "/tcp", HTTPPort + "/tcp", GRPCPort + "/tcp"},
 		WaitingFor: wait.ForAll(
-			wait.ForHTTP("/healthcheck").WithPort(HTTPPort).WithStartupTimeout(2*time.Minute),
+			wait.ForHTTP("/healthcheck").WithPort(HTTPPort).WithStartupTimeout(2 * time.Minute),
 		),
 	}
 

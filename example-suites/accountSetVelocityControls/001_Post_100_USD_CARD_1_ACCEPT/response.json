@@ -1,0 +1,9 @@
+{
+  "data": {
+    "postTransaction": { "transactionId": "70551688-df89-497f-be56-90cf46f465db" },
+    "balance": {
+      "balance": { "version": 1, "available": { "normalBalance": { "units": "100.00" } } }
+    },
+    "velocity": { "account": { "velocity": [{ "spent": "100.00", "remaining": "0.00" }] } }
+  }
+}
