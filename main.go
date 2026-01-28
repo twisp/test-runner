@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -45,6 +46,44 @@ func parseHeaders(headerFlags []string) (map[string]string, error) {
 	return headers, nil
 }
 
+func expandSuitePaths(paths []string) ([]string, error) {
+	var expanded []string
+	seen := make(map[string]struct{})
+	for _, suitePath := range paths {
+		info, err := os.Stat(suitePath)
+		if err != nil {
+			return nil, fmt.Errorf("invalid --test_suite_path %q: %w", suitePath, err)
+		}
+		if !info.IsDir() {
+			return nil, fmt.Errorf("test suite path %q is not a directory", suitePath)
+		}
+
+		suites, err := runner.DiscoverTests(suitePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to discover suites under %q: %w", suitePath, err)
+		}
+		runnable := suites.RunnableSuitePaths()
+		if len(runnable) == 0 {
+			return nil, fmt.Errorf("no test suites found under %q", suitePath)
+		}
+		for _, relPath := range runnable {
+			absPath := suitePath
+			if relPath != "" {
+				absPath = filepath.Join(suitePath, relPath)
+			}
+			if _, ok := seen[absPath]; ok {
+				continue
+			}
+			seen[absPath] = struct{}{}
+			expanded = append(expanded, absPath)
+		}
+	}
+	if len(expanded) == 0 {
+		return nil, fmt.Errorf("no test suites found")
+	}
+	return expanded, nil
+}
+
 func main() {
 	var suitePaths stringSlice
 	var headerFlags stringSlice
@@ -76,6 +115,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	expandedSuitePaths, err := expandSuitePaths([]string(suitePaths))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+
 	useExternalEndpoint := endpoint != ""
 
 	// Set up context with cancellation
@@ -101,7 +146,7 @@ func main() {
 	totalSkipped := 0
 
 	// Run each test suite
-	for _, suitePath := range suitePaths {
+	for _, suitePath := range expandedSuitePaths {
 		var graphQLEndpoint string
 		var container *runner.TwispContainer
 

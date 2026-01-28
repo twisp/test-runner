@@ -76,7 +76,6 @@ func DiscoverTests(suitePath string) (Suites, error) {
 			return fmt.Errorf("suite for '%s' not found", test.Dir)
 		}
 
-		// Merge test file into suite's base test
 		isNew := suite.Base == nil
 		if isNew {
 			suite.Base = test
@@ -84,9 +83,8 @@ func DiscoverTests(suitePath string) (Suites, error) {
 			suite.Base = mergeTest(suite.Base, test)
 		}
 
-		// Update parent suite references (root has parent path "" which is itself)
 		parentPath := getParentPath(suite.Path)
-		if suite.Path != "" { // Don't add root to itself
+		if suite.Path != "" {
 			parent, ok := suites[parentPath]
 			if !ok {
 				return fmt.Errorf("expected parent path '%s' for '%s'", parentPath, suite.Path)
@@ -96,13 +94,18 @@ func DiscoverTests(suitePath string) (Suites, error) {
 				parent.refs++
 			}
 
-			// Add to parent's test list (for all valid tests, not just sequenced)
-			parent.Tests[test.Name] = suite.Path
-			parent.Children[test.Name] = suite
-			if isNew {
-				suite.refs++
+			if suite.Base.Seq >= 0 {
+				parent.Tests[test.Name] = suite.Path
+				parent.Children[test.Name] = suite
+				if isNew {
+					suite.refs++
+				}
 			}
+
+			suites[parentPath] = parent
 		}
+
+		suites[test.Dir] = suite
 
 		return nil
 	})
@@ -110,7 +113,6 @@ func DiscoverTests(suitePath string) (Suites, error) {
 		return nil, err
 	}
 
-	// Remove empty suites
 	for path, suite := range suites {
 		if suite.Base == nil && len(suite.Tests) == 0 {
 			delete(suites, path)
@@ -127,6 +129,20 @@ func (s Suites) GetOrderedTests(suitePath string) []*Test {
 		tests = append(tests, t)
 	}, suitePath, -1)
 	return tests
+}
+
+// RunnableSuitePaths returns suite paths that should be executed directly.
+// Suites referenced by a parent (refs > 0) with no child tests are skipped.
+func (s Suites) RunnableSuitePaths() []string {
+	paths := make([]string, 0, len(s))
+	for path, suite := range s {
+		if suite.refs > 0 && len(suite.Tests) == 0 {
+			continue
+		}
+		paths = append(paths, path)
+	}
+	sort.Strings(paths)
+	return paths
 }
 
 // run executes fn for each test in order, respecting dependencies.
