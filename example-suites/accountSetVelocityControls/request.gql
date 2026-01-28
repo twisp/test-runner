@@ -7,13 +7,29 @@ mutation Velocity {
       window: []
       currency: ""
       limit: {
-        balance: [{ layer: "ENCUMBRANCE", amount: "params.amount", normalBalanceType: "DEBIT" }]
+        balance: [
+          {
+            layer: "ENCUMBRANCE"
+            amount: "params.amount"
+            normalBalanceType: "DEBIT"
+          }
+        ]
       }
       params: [
         # Settled layer by default
-        { name: "layer", type: STRING, description: "layer", default: "SETTLED" }
+        {
+          name: "layer"
+          type: STRING
+          description: "layer"
+          default: "SETTLED"
+        }
         # For $100.00
-        { name: "amount", type: DECIMAL, description: "amount", default: "100.00" }
+        {
+          name: "amount"
+          type: DECIMAL
+          description: "amount"
+          default: "100.00"
+        }
       ]
     }
   ) {
@@ -27,13 +43,20 @@ mutation Velocity {
       description: "Reject if a debit and exceeding the velocity limit"
       enforcement: { action: REJECT }
       velocityLimitIds: ["1be4132a-a389-45c3-9a61-0fe601d1ba8b"]
+      # Allow credits to bring the balance down.
+      # reject debits if velocity exceeds.
+      condition: "context.vars.entry.direction == DEBIT"
     }
   ) {
     velocityControlId
   }
 
   createJournal(
-    input: { journalId: "00000000-0000-0000-0000-000000000000", code: "GL", name: "GL" }
+    input: {
+      journalId: "00000000-0000-0000-0000-000000000000"
+      code: "GL"
+      name: "GL"
+    }
   ) {
     journalId
   }
@@ -45,7 +68,7 @@ mutation Velocity {
       name: "customers.1"
       description: "customer 1 cards"
       normalBalanceType: DEBIT
-      #config: { enableConcurrentPosting: true }
+      config: { enableConcurrentPosting: true }
     }
   ) {
     accountSetId
@@ -58,7 +81,6 @@ mutation Velocity {
       code: "cards.1"
       description: "card 1"
       normalBalanceType: DEBIT
-      #config: { enableConcurrentPosting: true }
     }
   ) {
     accountId
@@ -72,7 +94,6 @@ mutation Velocity {
       code: "cards.2"
       description: "card 2"
       normalBalanceType: DEBIT
-      #config: { enableConcurrentPosting: true }
     }
   ) {
     accountId
@@ -108,14 +129,20 @@ mutation Velocity {
 
   addCard1ToSet: addToAccountSet(
     id: "480ff40e-016c-4677-80ee-2b62bd34182d"
-    member: { memberId: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c", memberType: ACCOUNT }
+    member: {
+      memberId: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c"
+      memberType: ACCOUNT
+    }
   ) {
     accountSetId
   }
 
   addCard2ToSet: addToAccountSet(
     id: "480ff40e-016c-4677-80ee-2b62bd34182d"
-    member: { memberId: "bf716346-9eee-4ec5-bbc3-64c47de7d929", memberType: ACCOUNT }
+    member: {
+      memberId: "bf716346-9eee-4ec5-bbc3-64c47de7d929"
+      memberType: ACCOUNT
+    }
   ) {
     accountSetId
   }
@@ -146,9 +173,21 @@ mutation Velocity {
           default: "a767e377-0f35-401f-8f21-84c121b6dc00"
         }
         { name: "drAccount", type: UUID, description: "Account to debit." }
-        { name: "amount", type: DECIMAL, description: "Amount with decimal, e.g. `1.23`." }
-        { name: "currency", type: STRING, description: "Currency used for transaction." }
-        { name: "effective", type: DATE, description: "Effective date for transaction." }
+        {
+          name: "amount"
+          type: DECIMAL
+          description: "Amount with decimal, e.g. `1.23`."
+        }
+        {
+          name: "currency"
+          type: STRING
+          description: "Currency used for transaction."
+        }
+        {
+          name: "effective"
+          type: DATE
+          description: "Effective date for transaction."
+        }
         {
           name: "journalId"
           type: UUID
