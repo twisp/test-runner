@@ -1,0 +1,35 @@
+mutation Post10USDOverride {
+  postTransaction(
+    input: {
+      transactionId: "327006c6-fc0b-11f0-897f-069b540ea27c"
+      tranCode: "CARD_SETTLE"
+      params: {
+        drAccount: "bf716346-9eee-4ec5-bbc3-64c47de7d929"
+        amount: "10.00"
+        currency: "USD"
+        effective: "2022-09-01"
+        correlationId: "42e0a7da-336b-47b2-8ff3-de507c79e777"
+      }
+      # Override velocity enforcement set to warn
+      properties: { overrideVelocityEnforcement: { action: WARN } }
+    }
+  ) {
+    description
+    entries(first: 2) {
+      nodes {
+        account {
+          name
+        }
+        amount {
+          units
+        }
+        description
+      }
+    }
+    exceptions {
+      type
+      message
+      detail
+    }
+  }
+}

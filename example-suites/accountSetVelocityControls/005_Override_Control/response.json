@@ -1,0 +1,35 @@
+{
+  "data": {
+    "postTransaction": {
+      "description": "card settle for $10.00",
+      "entries": {
+        "nodes": [
+          {
+            "account": { "name": "cards.2" },
+            "amount": { "units": "10.00" },
+            "description": ""
+          },
+          {
+            "account": { "name": "settlement.mastercard" },
+            "amount": { "units": "10.00" },
+            "description": ""
+          }
+        ]
+      },
+      "exceptions": [
+        {
+          "detail": {
+            "accountId": "480ff40e-016c-4677-80ee-2b62bd34182d",
+            "layer": "ENCUMBRANCE",
+            "limit": "-Infinity",
+            "velocityControlId": "f6f27892-dfd8-480b-9213-d6adf7ef04ef",
+            "velocityLimitId": "1be4132a-a389-45c3-9a61-0fe601d1ba8b",
+            "violatingBalance": "110.00 USD"
+          },
+          "message": "velocity -Infinity USD exceeded, balance is 110.00 USD",
+          "type": "VELOCITY_CONTROL"
+        }
+      ]
+    }
+  }
+}
