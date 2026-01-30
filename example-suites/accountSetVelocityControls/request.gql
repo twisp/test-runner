@@ -16,13 +16,6 @@ mutation Velocity {
         ]
       }
       params: [
-        # Settled layer by default
-        {
-          name: "layer"
-          type: STRING
-          description: "layer"
-          default: "SETTLED"
-        }
         # For $100.00
         {
           name: "amount"
