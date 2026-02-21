@@ -1,0 +1,55 @@
+{
+  "data": {
+    "avgSettled": {
+      "createView": {
+        "document": [
+          { "alias": "account_id", "value": "context.trigger.normalize", "type": "UUID" },
+          { "alias": "count", "value": "document.count + uint(1)", "type": "UInt" },
+          {
+            "alias": "currency",
+            "value": "context.trigger.new.amount.currency()",
+            "type": "String"
+          },
+          {
+            "alias": "avg",
+            "value": "decimal.Round(\n  decimal.Quo(\n    (decimal.Mul(document.avg, decimal(string(document.count))) + context.trigger.new.amount.decimal()),\n    decimal(string(this.count)),\n    uint(39)),\n  \"half_even\",\n  2\n)",
+            "type": "Decimal"
+          },
+          { "alias": "journal_id", "value": "context.trigger.new.journal_id", "type": "UUID" }
+        ]
+      }
+    },
+    "perPolicyId": {
+      "createView": {
+        "document": [
+          { "alias": "account_id", "value": "context.trigger.normalize", "type": "UUID" },
+          {
+            "alias": "policyId",
+            "value": "context.trigger.new.metadata.policyId",
+            "type": "String"
+          },
+          {
+            "alias": "currency",
+            "value": "context.trigger.new.amount.currency()",
+            "type": "String"
+          },
+          {
+            "alias": "pending",
+            "value": "context.trigger.new.layer == PENDING ? (context.trigger.new.direction == DEBIT ? document.pending - context.trigger.new.amount.decimal() : document.pending + context.trigger.new.amount.decimal()) : document.pending",
+            "type": "Decimal"
+          },
+          {
+            "alias": "encumbrance",
+            "value": "context.trigger.new.layer == ENCUMBRANCE ? (context.trigger.new.direction == DEBIT ? document.encumbrance - context.trigger.new.amount.decimal() : document.encumbrance + context.trigger.new.amount.decimal()) : document.encumbrance",
+            "type": "Decimal"
+          },
+          {
+            "alias": "settled",
+            "value": "context.trigger.new.layer == SETTLED ? (context.trigger.new.direction == DEBIT ? document.settled - context.trigger.new.amount.decimal() : document.settled + context.trigger.new.amount.decimal()) : document.settled",
+            "type": "Decimal"
+          }
+        ]
+      }
+    }
+  }
+}

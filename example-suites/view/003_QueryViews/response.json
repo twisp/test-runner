@@ -1,0 +1,95 @@
+{
+  "data": {
+    "avg": {
+      "nodes": [
+        {
+          "version": 2,
+          "document": {
+            "account_id": "6c6affb0-5cf5-402b-8d84-01bfc1624a2c",
+            "avg": "25.00",
+            "count": 2,
+            "currency": "USD",
+            "journal_id": "00000000-0000-0000-0000-000000000000"
+          },
+          "history": {
+            "nodes": [
+              {
+                "document": {
+                  "account_id": "6c6affb0-5cf5-402b-8d84-01bfc1624a2c",
+                  "avg": "25.00",
+                  "count": 2,
+                  "currency": "USD",
+                  "journal_id": "00000000-0000-0000-0000-000000000000"
+                },
+                "version": 2
+              },
+              {
+                "document": {
+                  "account_id": "6c6affb0-5cf5-402b-8d84-01bfc1624a2c",
+                  "avg": "21.00",
+                  "count": 1,
+                  "currency": "USD",
+                  "journal_id": "00000000-0000-0000-0000-000000000000"
+                },
+                "version": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "perPolicyId": {
+      "nodes": [
+        {
+          "document": {
+            "account_id": "6c6affb0-5cf5-402b-8d84-01bfc1624a2c",
+            "currency": "USD",
+            "encumbrance": "0",
+            "pending": "0",
+            "policyId": "abc123",
+            "settled": "50.00"
+          },
+          "source": { "entity": "Entry", "new": { "amount": { "units": "29.00" } }, "old": null }
+        }
+      ]
+    },
+    "setAvg": {
+      "nodes": [
+        {
+          "version": 2,
+          "document": {
+            "account_id": "9cbee18a-3b10-11f0-8a74-069b540ea27d",
+            "avg": "25.00",
+            "count": 2,
+            "currency": "USD",
+            "journal_id": "00000000-0000-0000-0000-000000000000"
+          },
+          "history": {
+            "nodes": [
+              {
+                "document": {
+                  "account_id": "9cbee18a-3b10-11f0-8a74-069b540ea27d",
+                  "avg": "25.00",
+                  "count": 2,
+                  "currency": "USD",
+                  "journal_id": "00000000-0000-0000-0000-000000000000"
+                },
+                "version": 2
+              },
+              {
+                "document": {
+                  "account_id": "9cbee18a-3b10-11f0-8a74-069b540ea27d",
+                  "avg": "21.00",
+                  "count": 1,
+                  "currency": "USD",
+                  "journal_id": "00000000-0000-0000-0000-000000000000"
+                },
+                "version": 1
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

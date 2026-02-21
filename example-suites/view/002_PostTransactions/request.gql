@@ -1,0 +1,48 @@
+mutation PostTransactions(
+  $amountA: Decimal = "21.00"
+  $amountB: Decimal = "29.00"
+  $effective: Timestamp = "2025-01-01T01:00:00Z"
+  $transactionIdA: UUID! = "29b4e010-08ce-4819-98db-360db62082fc"
+  $transactionIdB: UUID! = "c5f17886-dbd2-412b-99da-ce185ab43947"
+  $policyId: String = "abc123"
+) {
+  a: postTransaction(
+    input: {
+      transactionId: $transactionIdA
+      tranCode: "BOOK_TRANSFER"
+      params: {
+        journalId: "00000000-0000-0000-0000-000000000000"
+        correlationId: "a2aa5351-9228-4d53-b500-3cef1f4a2cf4"
+        crAccount: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c"
+        drAccount: "f4a3cb70-9ace-4885-a3ca-d0b3a37bd847"
+        amount: $amountA
+        currency: "USD"
+        effective: $effective
+        metadata: { policyId: $policyId }
+        layer: 0
+      }
+    }
+  ) {
+    transactionId
+  }
+
+  b: postTransaction(
+    input: {
+      transactionId: $transactionIdB
+      tranCode: "BOOK_TRANSFER"
+      params: {
+        journalId: "00000000-0000-0000-0000-000000000000"
+        correlationId: "a2aa5351-9228-4d53-b500-3cef1f4a2cf4"
+        crAccount: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c"
+        drAccount: "f4a3cb70-9ace-4885-a3ca-d0b3a37bd847"
+        amount: $amountB
+        currency: "USD"
+        effective: $effective
+        metadata: { policyId: $policyId }
+        layer: 0
+      }
+    }
+  ) {
+    transactionId
+  }
+}

@@ -1,0 +1,76 @@
+query QueryViews {
+  avg: view(
+    name: "avgSettled"
+    where: {
+      index: {
+        partition: [{ alias: "account_id", value: { eq: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c" } }]
+        sort: [{ alias: "currency", value: { gte: "" } }]
+      }
+    }
+    first: 100
+  ) {
+    nodes {
+      version
+      document
+      history(first: 100) {
+        nodes {
+          document
+          version
+        }
+      }
+    }
+  }
+  perPolicyId: view(
+    name: "perPolicyId"
+    where: {
+      index: {
+        partition: [{ alias: "policyId", value: { eq: "abc123" } }]
+        sort: [{ alias: "account_id", value: { like: "6c6affb0-5cf5-402b-8d84-01bfc1624a2c" } }]
+      }
+    }
+    first: 100
+  ) {
+    nodes {
+      document
+      source {
+        entity
+        new {
+          ... on Entry {
+            amount {
+              units
+            }
+          }
+        }
+        old {
+          ... on Entry {
+            entryId
+            amount {
+              units
+            }
+          }
+        }
+      }
+    }
+  }
+  setAvg: view(
+    name: "avgSettled"
+    where: {
+      index: {
+        partition: [{ alias: "account_id", value: { eq: "9cbee18a-3b10-11f0-8a74-069b540ea27d" } }]
+        sort: [{ alias: "currency", value: { gte: "" } }]
+      }
+    }
+    first: 100
+  ) {
+    nodes {
+      version
+      document
+      history(first: 100) {
+        nodes {
+          document
+          version
+        }
+      }
+    }
+  }
+}

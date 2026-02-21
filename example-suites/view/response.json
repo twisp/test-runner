@@ -1,0 +1,10 @@
+{
+  "data": {
+    "createJournal": { "journalId": "00000000-0000-0000-0000-000000000000" },
+    "cash": { "accountId": "f4a3cb70-9ace-4885-a3ca-d0b3a37bd847" },
+    "positions": { "accountSetId": "9cbee18a-3b10-11f0-8a74-069b540ea27d" },
+    "a": { "accountId": "6c6affb0-5cf5-402b-8d84-01bfc1624a2c", "name": "position 1" },
+    "b": { "accountId": "bf716346-9eee-4ec5-bbc3-64c47de7d929", "name": "position 2" },
+    "createTranCode": { "tranCodeId": "9eb60ed8-438e-4d99-9bd6-ba94f2b91e91" }
+  }
+}
