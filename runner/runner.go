@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -41,6 +42,7 @@ type Runner struct {
 	client    *GraphQLClient
 	options   Options
 	accountID string
+	output    io.Writer
 }
 
 // NewRunner creates a new test runner for the given GraphQL endpoint.
@@ -50,7 +52,17 @@ func NewRunner(endpoint string, options Options, accountID string, headers map[s
 		client:    NewGraphQLClient(endpoint, accountID, headers),
 		options:   options,
 		accountID: accountID,
+		output:    os.Stdout,
 	}
+}
+
+// SetOutput redirects the runner's progress output to w. Pass nil to restore
+// stdout. Useful for buffering per-suite output in parallel runs.
+func (r *Runner) SetOutput(w io.Writer) {
+	if w == nil {
+		w = os.Stdout
+	}
+	r.output = w
 }
 
 // RunSuite executes all tests in the given suite path.
@@ -69,14 +81,19 @@ func (r *Runner) RunSuite(ctx context.Context, suitePath string) (*SuiteResult, 
 	// Get ordered tests for the root suite
 	tests := r.collectAllTests(suites)
 
-	fmt.Printf("\n=== Running suite: %s ===\n", suitePath)
-	fmt.Printf("Discovered %d tests\n\n", len(tests))
+	out := r.output
+	if out == nil {
+		out = os.Stdout
+	}
+
+	fmt.Fprintf(out, "\n=== Running suite: %s ===\n", suitePath)
+	fmt.Fprintf(out, "Discovered %d tests\n\n", len(tests))
 
 	for _, test := range tests {
 		if !test.IsValid() {
 			result.Skipped++
 			if r.options.Verbose {
-				fmt.Printf("SKIP: %s (missing request.gql or response.json)\n", test.Dir)
+				fmt.Fprintf(out, "SKIP: %s (missing request.gql or response.json)\n", test.Dir)
 			}
 			continue
 		}
@@ -86,16 +103,16 @@ func (r *Runner) RunSuite(ctx context.Context, suitePath string) (*SuiteResult, 
 
 		if testResult.Passed {
 			result.Passed++
-			fmt.Printf("PASS: %s (%v)\n", test.Dir, testResult.Duration.Round(time.Millisecond))
+			fmt.Fprintf(out, "PASS: %s (%v)\n", test.Dir, testResult.Duration.Round(time.Millisecond))
 		} else {
 			result.Failed++
-			fmt.Printf("FAIL: %s (%v)\n", test.Dir, testResult.Duration.Round(time.Millisecond))
+			fmt.Fprintf(out, "FAIL: %s (%v)\n", test.Dir, testResult.Duration.Round(time.Millisecond))
 			if testResult.Error != nil {
-				fmt.Printf("      Error: %v\n", testResult.Error)
+				fmt.Fprintf(out, "      Error: %v\n", testResult.Error)
 			}
 			if r.options.Verbose && testResult.Expected != "" && testResult.Actual != "" {
-				fmt.Printf("      Expected: %s\n", compact(testResult.Expected))
-				fmt.Printf("      Actual:   %s\n", compact(testResult.Actual))
+				fmt.Fprintf(out, "      Expected: %s\n", compact(testResult.Expected))
+				fmt.Fprintf(out, "      Actual:   %s\n", compact(testResult.Actual))
 			}
 
 			if r.options.FailFast {
@@ -106,7 +123,7 @@ func (r *Runner) RunSuite(ctx context.Context, suitePath string) (*SuiteResult, 
 
 	result.Duration = time.Since(start)
 
-	fmt.Printf("\n=== Suite complete: %d passed, %d failed, %d skipped (%v) ===\n",
+	fmt.Fprintf(out, "\n=== Suite complete: %d passed, %d failed, %d skipped (%v) ===\n",
 		result.Passed, result.Failed, result.Skipped, result.Duration.Round(time.Millisecond))
 
 	return result, nil
