@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -14,6 +15,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/twisp/test-runner/runner"
 )
@@ -147,6 +149,7 @@ func main() {
 	var image string
 	var pull bool
 	var parallel int
+	var summary bool
 
 	flag.Var(&suitePaths, "test_suite_path", "Path to a test suite directory (can be specified multiple times)")
 	flag.BoolVar(&verbose, "verbose", false, "Print detailed output including response diffs")
@@ -156,6 +159,7 @@ func main() {
 	flag.BoolVar(&pull, "pull", false, "Always pull the container image before starting")
 	flag.Var(&headerFlags, "header", "Custom header in 'Key: Value' format (can be specified multiple times)")
 	flag.IntVar(&parallel, "parallel", 1, "Number of test suites to run concurrently against the shared endpoint (each suite uses a unique account ID)")
+	flag.BoolVar(&summary, "summary", false, "Suppress per-suite output; print only the final summary, runtimes, and any failures")
 
 	// Parse iteratively so we can sweep up positional args between flags.
 	// This lets unquoted shell globs work for --test_suite_path (the shell
@@ -222,6 +226,8 @@ func main() {
 	}
 	buffered := parallel > 1
 
+	runStart := time.Now()
+
 	// Start a single shared endpoint for all suites. Each suite uses a unique
 	// account ID (tenant), so they don't collide on the server.
 	var graphQLEndpoint string
@@ -251,8 +257,18 @@ func main() {
 		fmt.Printf("Container ready at: %s\n", graphQLEndpoint)
 	}
 
+	type testTiming struct {
+		path     string
+		duration time.Duration
+		passed   bool
+		errMsg   string
+	}
+
 	type suiteOutcome struct {
+		path                    string
 		passed, failed, skipped int
+		duration                time.Duration
+		tests                   []testTiming
 		runErr                  error
 	}
 
@@ -279,13 +295,16 @@ func main() {
 			}
 
 			var buf *bytes.Buffer
-			if buffered {
+			if buffered && !summary {
 				buf = &bytes.Buffer{}
 			}
 
 			accountID := hashSuitePath(suitePath)
 			r := runner.NewRunner(graphQLEndpoint, options, accountID, headers)
-			if buffered {
+			switch {
+			case summary:
+				r.SetOutput(io.Discard)
+			case buffered:
 				r.SetOutput(buf)
 			}
 			result, err := r.RunSuite(ctx, suitePath)
@@ -293,14 +312,35 @@ func main() {
 			flush(buf)
 
 			if err != nil {
-				results <- suiteOutcome{runErr: fmt.Errorf("running suite %q: %w", suitePath, err)}
+				results <- suiteOutcome{path: suitePath, runErr: fmt.Errorf("running suite %q: %w", suitePath, err)}
 				continue
 			}
 
+			tests := make([]testTiming, 0, len(result.Results))
+			for _, tr := range result.Results {
+				name := suitePath
+				if tr.Test != nil && tr.Test.Dir != "" {
+					name = filepath.Join(suitePath, tr.Test.Dir)
+				}
+				var errMsg string
+				if tr.Error != nil {
+					errMsg = tr.Error.Error()
+				}
+				tests = append(tests, testTiming{
+					path:     name,
+					duration: tr.Duration,
+					passed:   tr.Passed,
+					errMsg:   errMsg,
+				})
+			}
+
 			results <- suiteOutcome{
-				passed:  result.Passed,
-				failed:  result.Failed,
-				skipped: result.Skipped,
+				path:     suitePath,
+				passed:   result.Passed,
+				failed:   result.Failed,
+				skipped:  result.Skipped,
+				duration: result.Duration,
+				tests:    tests,
 			}
 
 			if failFast && result.Failed > 0 {
@@ -332,6 +372,8 @@ func main() {
 	totalFailed := 0
 	totalSkipped := 0
 	var firstRunErr error
+	var collectedSuites []suiteOutcome
+	var allTests []testTiming
 	for outcome := range results {
 		if outcome.runErr != nil && firstRunErr == nil {
 			firstRunErr = outcome.runErr
@@ -339,16 +381,75 @@ func main() {
 		totalPassed += outcome.passed
 		totalFailed += outcome.failed
 		totalSkipped += outcome.skipped
+		if outcome.path != "" {
+			collectedSuites = append(collectedSuites, outcome)
+		}
+		allTests = append(allTests, outcome.tests...)
 	}
+
+	wallTime := time.Since(runStart)
 
 	if firstRunErr != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", firstRunErr)
 		os.Exit(1)
 	}
 
+	// Failures, if any. Useful especially in --summary mode where per-test
+	// FAIL output is suppressed during the run.
+	var failures []testTiming
+	for _, t := range allTests {
+		if !t.passed {
+			failures = append(failures, t)
+		}
+	}
+	if len(failures) > 0 {
+		fmt.Printf("\n========================================\n")
+		fmt.Printf("Failures (%d)\n", len(failures))
+		fmt.Printf("========================================\n")
+		for _, f := range failures {
+			fmt.Printf("  FAIL  %s\n", f.path)
+			if f.errMsg != "" {
+				fmt.Printf("        %s\n", f.errMsg)
+			}
+		}
+	}
+
+	// Per-suite timings, slowest first.
+	if len(collectedSuites) > 0 {
+		sort.Slice(collectedSuites, func(i, j int) bool {
+			return collectedSuites[i].duration > collectedSuites[j].duration
+		})
+		fmt.Printf("\n========================================\n")
+		fmt.Printf("Suite runtimes (slowest first)\n")
+		fmt.Printf("========================================\n")
+		var suiteSum time.Duration
+		for _, s := range collectedSuites {
+			suiteSum += s.duration
+			fmt.Printf("  %10s  %s\n", s.duration.Round(time.Millisecond), s.path)
+		}
+		fmt.Printf("  %10s  (sum of suite durations)\n", suiteSum.Round(time.Millisecond))
+	}
+
+	// Slowest individual tests (top 10) when there's enough material to rank.
+	if len(allTests) > 1 {
+		sort.Slice(allTests, func(i, j int) bool {
+			return allTests[i].duration > allTests[j].duration
+		})
+		topN := min(10, len(allTests))
+		fmt.Printf("\nSlowest tests (top %d of %d)\n", topN, len(allTests))
+		for _, t := range allTests[:topN] {
+			status := "PASS"
+			if !t.passed {
+				status = "FAIL"
+			}
+			fmt.Printf("  %10s  %s  %s\n", t.duration.Round(time.Millisecond), status, t.path)
+		}
+	}
+
 	// Print summary
 	fmt.Printf("\n========================================\n")
 	fmt.Printf("TOTAL: %d passed, %d failed, %d skipped\n", totalPassed, totalFailed, totalSkipped)
+	fmt.Printf("Wall time: %v  (parallel=%d)\n", wallTime.Round(time.Millisecond), parallel)
 	fmt.Printf("========================================\n")
 
 	if totalFailed > 0 {
